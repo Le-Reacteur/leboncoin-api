@@ -1,34 +1,10 @@
-# Airbnb API
-
-## Installer les dépendances
-
-```bash
-npm install
-```
-
-## Importer les données MongoDB
-
-```bash
-npm run data
-```
-
-## Démarrer le serveur
-
-```bash
-npm start
-```
-
-## Tester l'API
-
-```bash
-npm run test
-```
+# leboncoin API
 
 ## Version en ligne
 
-https://airbnb-api.now.sh
+https://leboncoin-api.herokuapp.com/
 
 ## Credits
 
-[Farid Safi](https://twitter.com/faridsafi)
+[Farid Safi](https://twitter.com/faridsafi)  
 [www.LeReacteur.io](http://www.lereacteur.io)
