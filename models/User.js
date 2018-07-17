@@ -8,8 +8,7 @@ var UserSchema = new mongoose.Schema({
 
   // Nous choisisons de créer un objet `account` dans lequel nous stockerons les informations non sensibles
   account: {
-    username: { type: String, unique: true, required: true },
-    biography: String
+    username: { type: String, unique: true, required: true }
   }
 });
 
