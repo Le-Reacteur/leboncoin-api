@@ -13,7 +13,8 @@ router.post("/sign_up", function(req, res, next) {
       // L'inscription créera le token permettant de s'authentifier auprès de la strategie `http-bearer`
       token: uid2(16), // uid2 permet de générer une clef aléatoirement. Ce token devra être regénérer lorsque l'utilisateur changera son mot de passe
       account: {
-        username: req.body.username
+        username: req.body.username,
+        phone: req.body.phone
       }
     }),
     req.body.password, // Le mot de passe doit être obligatoirement le deuxième paramètre transmis à `register` afin d'être crypté

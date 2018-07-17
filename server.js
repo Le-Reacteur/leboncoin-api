@@ -64,10 +64,12 @@ app.use("/api", cors());
 // Les routes sont séparées dans plusieurs fichiers
 var coreRoutes = require("./routes/core.js");
 var userRoutes = require("./routes/user.js");
+var offerRoutes = require("./routes/offer.js");
 
 // Les routes relatives aux utilisateurs auront pour prefix d'URL `/user`
 app.use("/api", coreRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/offer", offerRoutes);
 
 // Toutes les méthodes HTTP (GET, POST, etc.) des pages non trouvées afficheront une erreur 404
 app.all("*", function(req, res) {
