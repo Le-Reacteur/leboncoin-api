@@ -81,7 +81,7 @@ app.use(function(err, req, res, next) {
   if (res.statusCode === 200) res.status(400);
   console.error(err);
 
-  if (process.env.NODE_ENV === "production") err = "An error occurred";
+  // if (process.env.NODE_ENV === "production") err = "An error occurred";
   res.json({ error: err });
 });
 
