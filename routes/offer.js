@@ -5,14 +5,51 @@ var isAuthenticated = require("../middlewares/isAuthenticated");
 var ObjectId = require("mongoose").Types.ObjectId;
 
 router.get("/", function(req, res) {
-  Offer.find({})
-    .populate({
-      path: "creator",
-      select: "account"
-    })
-    .exec(function(err, offers) {
-      res.json(offers);
-    });
+  const filter = {};
+  if (req.query.priceMin !== undefined || req.query.priceMax !== undefined) {
+    filter.price = {};
+    if (req.query.priceMin !== undefined) {
+      filter.price["$gte"] = req.query.priceMin;
+    }
+    if (req.query.priceMax !== undefined) {
+      filter.price["$lte"] = req.query.priceMax;
+    }
+  }
+
+  const query = Offer.find(filter).populate({
+    path: "creator",
+    select: "account"
+  });
+
+  if (req.query.skip !== undefined) {
+    query.skip(parseInt(req.query.skip));
+  }
+  if (req.query.limit !== undefined) {
+    query.limit(parseInt(req.query.limit));
+  } else {
+    // valeur par défaut de la limite
+    query.limit(100);
+  }
+
+  switch (req.query.sort) {
+    case "price-desc":
+      query.sort({ price: -1 });
+      break;
+    case "price-asc":
+      query.sort({ price: 1 });
+      break;
+    case "date-desc":
+      query.sort({ created: -1 });
+      break;
+    case "date-asc":
+      query.sort({ created: 1 });
+      break;
+    default:
+  }
+
+  query.exec(function(err, offers) {
+    res.json(offers);
+  });
 });
 
 router.get("/my-offers", isAuthenticated, function(req, res) {
