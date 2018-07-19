@@ -6,9 +6,12 @@ var ObjectId = require("mongoose").Types.ObjectId;
 
 router.get("/", function(req, res) {
   const filter = {};
-  if (req.query.priceMin !== undefined || req.query.priceMax) {
+  if (
+    (req.query.priceMin !== undefined && req.query.priceMin !== "") ||
+    (req.query.priceMax !== undefined && req.query.priceMax !== "")
+  ) {
     filter.price = {};
-    if (req.query.priceMin !== undefined) {
+    if (req.query.priceMin) {
       filter.price["$gte"] = req.query.priceMin;
     }
 
