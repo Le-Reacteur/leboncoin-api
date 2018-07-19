@@ -1,31 +1,35 @@
-// Le package `dotenv` permet de pouvoir definir des variables d'environnement dans le fichier `.env`
-// Nous utilisons le fichier `.slugignore` afin d'ignorer le fichier `.env` dans l'environnement Heroku
+// Le package `dotenv` permet de pouvoir definir des variables d'environnement
+// dans le fichier `.env` Nous utilisons le fichier `.slugignore` afin d'ignorer
+// le fichier `.env` dans l'environnement Heroku
 require("dotenv").config();
 
-// Le package `mongoose` est un ODM (Object-Document Mapping) permettant de manipuler les documents de la base de données comme si c'étaient des objets
+// Le package `mongoose` est un ODM (Object-Document Mapping) permettant de
+// manipuler les documents de la base de données comme si c'étaient des objets
 var mongoose = require("mongoose");
-mongoose.connect(
-  process.env.MONGODB_URI,
-  { useNewUrlParser: true },
-  function(err) {
-    if (err) console.error("Could not connect to mongodb.");
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true
+}, function (err) {
+  if (err) 
+    console.error("Could not connect to mongodb.");
   }
 );
 
 var express = require("express");
 var app = express();
 
-// Le package `helmet` est une collection de protections contre certaines vulnérabilités HTTP
+// Le package `helmet` est une collection de protections contre certaines
+// vulnérabilités HTTP
 var helmet = require("helmet");
 app.use(helmet());
 
-// Les réponses (> 1024 bytes) du serveur seront compressées au format GZIP pour diminuer la quantité d'informations transmise
+// Les réponses (> 1024 bytes) du serveur seront compressées au format GZIP pour
+// diminuer la quantité d'informations transmise
 var compression = require("compression");
 app.use(compression());
 
 // Parse le `body` des requêtes HTTP reçues
 var bodyParser = require("body-parser");
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'})); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
 
 // Initialisation des models
 var User = require("./models/User");
@@ -37,27 +41,24 @@ app.use(passport.initialize()); // TODO test
 // Nous aurons besoin de 2 strategies :
 // - `local` permettra de gérer le login nécessitant un mot de passe
 var LocalStrategy = require("passport-local").Strategy;
-passport.use(
-  new LocalStrategy(
-    {
-      usernameField: "email",
-      passReqToCallback: true,
-      session: false
-    },
-    User.authenticateLocal()
-  )
-);
+passport.use(new LocalStrategy({
+  usernameField: "email",
+  passReqToCallback: true,
+  session: false
+}, User.authenticateLocal()));
 
-// - `http-bearer` permettra de gérer toute les requêtes authentifiées à l'aide d'un `token`
+// - `http-bearer` permettra de gérer toute les requêtes authentifiées à l'aide
+// d'un `token`
 var HTTPBearerStrategy = require("passport-http-bearer").Strategy;
 passport.use(new HTTPBearerStrategy(User.authenticateBearer())); // La méthode `authenticateBearer` a été déclarée dans le model User
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.send("Welcome to the leboncoin API.");
 });
 
-// `Cross-Origin Resource Sharing` est un mechanisme permettant d'autoriser les requêtes provenant d'un nom de domaine different
-// Ici, nous autorisons l'API à repondre aux requêtes AJAX venant d'autres serveurs
+// `Cross-Origin Resource Sharing` est un mechanisme permettant d'autoriser les
+// requêtes provenant d'un nom de domaine different Ici, nous autorisons l'API
+// à repondre aux requêtes AJAX venant d'autres serveurs
 var cors = require("cors");
 app.use("/api", cors());
 
@@ -71,23 +72,27 @@ app.use("/api", coreRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/offer", offerRoutes);
 
-// Toutes les méthodes HTTP (GET, POST, etc.) des pages non trouvées afficheront une erreur 404
-app.all("*", function(req, res) {
-  res.status(404).json({ error: "Not Found" });
+// Toutes les méthodes HTTP (GET, POST, etc.) des pages non trouvées afficheront
+// une erreur 404
+app.all("*", function (req, res) {
+  res
+    .status(404)
+    .json({error: "Not Found"});
 });
 
-// Le dernier middleware de la chaîne gérera les d'erreurs
-// Ce `error handler` doit définir obligatoirement 4 paramètres
-// Définition d'un middleware : https://expressjs.com/en/guide/writing-middleware.html
-app.use(function(err, req, res, next) {
-  if (res.statusCode === 200) res.status(400);
+// Le dernier middleware de la chaîne gérera les d'erreurs Ce `error handler`
+// doit définir obligatoirement 4 paramètres Définition d'un middleware :
+// https://expressjs.com/en/guide/writing-middleware.html
+app.use(function (err, req, res, next) {
+  if (res.statusCode === 200) 
+    res.status(400);
   console.error(err);
 
   // if (process.env.NODE_ENV === "production") err = "An error occurred";
-  res.json({ error: err });
+  res.json({error: err});
 });
 
-app.listen(process.env.PORT, function() {
+app.listen(process.env.PORT, function () {
   console.log(`leboncoin API running on port ${process.env.PORT}`);
   console.log(`Current environment is ${process.env.NODE_ENV}`);
 });
