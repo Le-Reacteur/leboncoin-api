@@ -16,6 +16,10 @@ router.get("/", function(req, res) {
     }
   }
 
+  if (req.query.title) {
+    filter.title = { $regex: req.query.title, $options: "i" };
+  }
+
   const query = Offer.find(filter).populate({
     path: "creator",
     select: "account"
