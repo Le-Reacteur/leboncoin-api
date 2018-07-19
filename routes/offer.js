@@ -89,12 +89,12 @@ router.delete("/remove/:id", isAuthenticated, function (req, res, next) {
 });
 
 // router.get("/modifier/:id", function(req, res) {   if (req.isAuthenticated())
-// {     Ad.find({ _id: req.params.id }, function(err, ad) { console.log(ad); if
-// (ad.length) {         res.render("edit", {  infos: getInfos(req,
+// {     Ad.find({ _id: req.params.id }, function(err, ad) { console.log(ad);
+// if (ad.length) {         res.render("edit", {  infos: getInfos(req,
 // "/modifier"),           ad         });       }     });  } else {
 // res.redirect("/");   } }); router.post("/publier", upload.array("photos",
 // 10), function(req, res) {
-router.post("/publish", isAuthenticated, uploadImages, function (req, res, next) {
+router.post("/publish", isAuthenticated, uploadPictures, function (req, res, next) {
   // var photos = []; if (req.files.length) {   photos = _.map(req.files,
   // function(file) {     return file.filename;   }); }
 
