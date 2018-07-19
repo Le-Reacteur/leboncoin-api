@@ -21,7 +21,9 @@ const uploadPictures = (req, res, next) => {
             }, (error, result) => {
                 // Si j'ai une erreur avec l'upload, je sors de ma route
                 if (error) {
-                    return res.json({error})
+                    return res
+                        .status(500)
+                        .json({error})
                 }
                 // Sinon, je push mon image dans le tableau
                 pictures.push(result);
