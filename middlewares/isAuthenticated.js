@@ -1,17 +1,23 @@
-var passport = require("passport");
+var User = require("../models/User.js");
 
 module.exports = (req, res, next) => {
-  passport.authenticate("bearer", { session: false }, function(err, user) {
-    req.user = user;
+  if (req.headers.authorization) {
+    User.findOne(
+      { token: req.headers.authorization.replace("Bearer ", "") },
+      function(err, user) {
+        if (err) {
+          return res.status(400).json({ error: err.message });
+        }
+        if (!user) {
+          return res.status(401).json({ error: "Unauthorized" });
+        } else {
+          req.user = user;
 
-    if (err) {
-      res.status(400);
-      return next(err.message);
-    }
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    } else {
-      return next();
-    }
-  })(req, res, next);
+          return next();
+        }
+      }
+    );
+  } else {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 };

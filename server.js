@@ -6,11 +6,13 @@ require("dotenv").config();
 // Le package `mongoose` est un ODM (Object-Document Mapping) permettant de
 // manipuler les documents de la base de données comme si c'étaient des objets
 var mongoose = require("mongoose");
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true
-}, function (err) {
-  if (err) 
-    console.error("Could not connect to mongodb.");
+mongoose.connect(
+  process.env.MONGODB_URI,
+  {
+    useNewUrlParser: true
+  },
+  function(err) {
+    if (err) console.error("Could not connect to mongodb.");
   }
 );
 
@@ -29,30 +31,12 @@ app.use(compression());
 
 // Parse le `body` des requêtes HTTP reçues
 var bodyParser = require("body-parser");
-app.use(bodyParser.json({limit: '50mb'})); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
+app.use(bodyParser.json({ limit: "50mb" })); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
 
 // Initialisation des models
 var User = require("./models/User");
 
-// Le package `passport`
-var passport = require("passport");
-app.use(passport.initialize()); // TODO test
-
-// Nous aurons besoin de 2 strategies :
-// - `local` permettra de gérer le login nécessitant un mot de passe
-var LocalStrategy = require("passport-local").Strategy;
-passport.use(new LocalStrategy({
-  usernameField: "email",
-  passReqToCallback: true,
-  session: false
-}, User.authenticateLocal()));
-
-// - `http-bearer` permettra de gérer toute les requêtes authentifiées à l'aide
-// d'un `token`
-var HTTPBearerStrategy = require("passport-http-bearer").Strategy;
-passport.use(new HTTPBearerStrategy(User.authenticateBearer())); // La méthode `authenticateBearer` a été déclarée dans le model User
-
-app.get("/", function (req, res) {
+app.get("/", function(req, res) {
   res.send("Welcome to the leboncoin API.");
 });
 
@@ -74,25 +58,22 @@ app.use("/api/offer", offerRoutes);
 
 // Toutes les méthodes HTTP (GET, POST, etc.) des pages non trouvées afficheront
 // une erreur 404
-app.all("*", function (req, res) {
-  res
-    .status(404)
-    .json({error: "Not Found"});
+app.all("*", function(req, res) {
+  res.status(404).json({ error: "Not Found" });
 });
 
 // Le dernier middleware de la chaîne gérera les d'erreurs Ce `error handler`
 // doit définir obligatoirement 4 paramètres Définition d'un middleware :
 // https://expressjs.com/en/guide/writing-middleware.html
-app.use(function (err, req, res, next) {
-  if (res.statusCode === 200) 
-    res.status(400);
+app.use(function(err, req, res, next) {
+  if (res.statusCode === 200) res.status(400);
   console.error(err);
 
   // if (process.env.NODE_ENV === "production") err = "An error occurred";
-  res.json({error: err});
+  res.json({ error: err });
 });
 
-app.listen(process.env.PORT, function () {
+app.listen(process.env.PORT, function() {
   console.log(`leboncoin API running on port ${process.env.PORT}`);
   console.log(`Current environment is ${process.env.NODE_ENV}`);
 });
