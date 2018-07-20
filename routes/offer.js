@@ -5,9 +5,12 @@ var isAuthenticated = require("../middlewares/isAuthenticated");
 var uploadPictures = require("../middlewares/uploadPictures");
 var ObjectId = require("mongoose").Types.ObjectId;
 
-router.get("/", function (req, res) {
+router.get("/", function(req, res) {
   const filter = {};
-  if ((req.query.priceMin !== undefined && req.query.priceMin !== "") || (req.query.priceMax !== undefined && req.query.priceMax !== "")) {
+  if (
+    (req.query.priceMin !== undefined && req.query.priceMin !== "") ||
+    (req.query.priceMax !== undefined && req.query.priceMax !== "")
+  ) {
     filter.price = {};
     if (req.query.priceMin) {
       filter.price["$gte"] = req.query.priceMin;
@@ -25,9 +28,10 @@ router.get("/", function (req, res) {
     };
   }
 
-  const query = Offer
-    .find(filter)
-    .populate({path: "creator", select: "account"});
+  const query = Offer.find(filter).populate({
+    path: "creator",
+    select: "account"
+  });
 
   if (req.query.skip !== undefined) {
     query.skip(parseInt(req.query.skip));
@@ -41,41 +45,40 @@ router.get("/", function (req, res) {
 
   switch (req.query.sort) {
     case "price-desc":
-      query.sort({price: -1});
+      query.sort({ price: -1 });
       break;
     case "price-asc":
-      query.sort({price: 1});
+      query.sort({ price: 1 });
       break;
     case "date-desc":
-      query.sort({created: -1});
+      query.sort({ created: -1 });
       break;
     case "date-asc":
-      query.sort({created: 1});
+      query.sort({ created: 1 });
       break;
     default:
   }
 
-  query
-    .exec(function (err, offers) {
+  query.exec(function(err, offers) {
+    res.json(offers);
+  });
+});
+
+router.get("/my-offers", isAuthenticated, function(req, res) {
+  Offer.find({ creator: req.user })
+    .populate({ path: "creator", select: "account" })
+    .exec(function(err, offers) {
       res.json(offers);
     });
 });
 
-router.get("/my-offers", isAuthenticated, function (req, res) {
-  Offer
-    .find({creator: req.user})
-    .populate({path: "creator", select: "account"})
-    .exec(function (err, offers) {
-      res.json(offers);
-    });
-});
-
-router.delete("/remove/:id", isAuthenticated, function (req, res, next) {
-  Offer
-    .findOneAndRemove({
+router.delete("/remove/:id", isAuthenticated, function(req, res, next) {
+  Offer.findOneAndRemove(
+    {
       _id: ObjectId(req.params.id),
       creator: req.user
-    }, function (err, obj) {
+    },
+    function(err, obj) {
       if (err) {
         return next(err.message);
       }
@@ -83,9 +86,10 @@ router.delete("/remove/:id", isAuthenticated, function (req, res, next) {
         res.status(404);
         return next("Nothing to delete");
       } else {
-        return res.json({message: "Deleted"});
+        return res.json({ message: "Deleted" });
       }
-    });
+    }
+  );
 });
 
 // router.get("/modifier/:id", function(req, res) {   if (req.isAuthenticated())
@@ -94,7 +98,11 @@ router.delete("/remove/:id", isAuthenticated, function (req, res, next) {
 // "/modifier"),           ad         });       }     });  } else {
 // res.redirect("/");   } }); router.post("/publier", upload.array("photos",
 // 10), function(req, res) {
-router.post("/publish", isAuthenticated, uploadPictures, function (req, res, next) {
+router.post("/publish", isAuthenticated, uploadPictures, function(
+  req,
+  res,
+  next
+) {
   // var photos = []; if (req.files.length) {   photos = _.map(req.files,
   // function(file) {     return file.filename;   }); }
 
@@ -106,7 +114,7 @@ router.post("/publish", isAuthenticated, uploadPictures, function (req, res, nex
     creator: req.user
   };
   var offer = new Offer(obj);
-  offer.save(function (err) {
+  offer.save(function(err) {
     if (!err) {
       return res.json({
         _id: offer._id,
@@ -126,11 +134,10 @@ router.post("/publish", isAuthenticated, uploadPictures, function (req, res, nex
   });
 });
 
-router.get("/:id", function (req, res, next) {
-  Offer
-    .findById(req.params.id)
-    .populate({path: "creator", select: "account"})
-    .exec(function (err, offer) {
+router.get("/:id", function(req, res, next) {
+  Offer.findById(req.params.id)
+    .populate({ path: "creator", select: "account" })
+    .exec(function(err, offer) {
       if (err) {
         return next(err.message);
       }
