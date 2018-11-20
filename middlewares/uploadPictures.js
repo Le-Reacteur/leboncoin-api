@@ -1,4 +1,4 @@
-// Importation de CLoudinary
+// Importation de Cloudinary
 const cloudinary = require("cloudinary");
 // Configuration de Cloudinary
 cloudinary.config({
@@ -10,7 +10,7 @@ const uid2 = require("uid2");
 
 const uploadPictures = (req, res, next) => {
   console.log("upload pictures");
-  // J'initialise un tableau vide pour mes images uploadées
+  // J'initialise un tableau vide pour y stocker mes images uploadées
   const pictures = [];
   // Je récupères le tabelau de fichiers
   const files = req.body.files;
@@ -19,7 +19,7 @@ const uploadPictures = (req, res, next) => {
   // Et pour chaque fichier dans le tableau, je crée un upload vers Cloudinary
   if (files.length) {
     files.forEach(file => {
-      // Je crée un nom spécifique pour la photo
+      // Je crée un nom spécifique pour le fichier
       const name = uid2(16);
       cloudinary.v2.uploader.upload(
         file,
@@ -43,15 +43,16 @@ const uploadPictures = (req, res, next) => {
             /* res
                         .status(200)
                         .json({message: `You've uploaded ${filesUploaded} files.`}); */
-            // Je stocke les images dans l'objet `req`
+            // ... je stocke les images dans l'objet `req`...
             req.pictures = pictures;
-            // Et je poursuis ma route avec `next()`
+            // ... et je poursuis ma route avec `next()`
             next();
           }
         }
       );
     });
   } else {
+    // Pas de fichier à uploader ? Je poursuis ma route avec `next()`.
     next();
   }
 };

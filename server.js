@@ -1,10 +1,14 @@
-// Le package `dotenv` permet de pouvoir definir des variables d'environnement
-// dans le fichier `.env` Nous utilisons le fichier `.slugignore` afin d'ignorer
-// le fichier `.env` dans l'environnement Heroku
+/*
+Le package `dotenv` permet de definir des variables d'environnement
+dans le fichier `.env`. Nous utilisons le fichier `.slugignore` pour ignorer
+le fichier `.env` dans l'environnement Heroku
+*/
 require("dotenv").config();
 
-// Le package `mongoose` est un ODM (Object-Document Mapping) permettant de
-// manipuler les documents de la base de données comme si c'étaient des objets
+/*
+Le package `mongoose` est un ODM (Object-Document Mapping) permettant de
+la manipulation des documents de la base de données comme si s'agissait d'objets
+*/
 var mongoose = require("mongoose");
 mongoose.connect(
   process.env.MONGODB_URI,
@@ -19,13 +23,17 @@ mongoose.connect(
 var express = require("express");
 var app = express();
 
-// Le package `helmet` est une collection de protections contre certaines
-// vulnérabilités HTTP
+/*
+Le package `helmet` est une collection de protections contre certaines
+vulnérabilités HTTP
+*/
 var helmet = require("helmet");
 app.use(helmet());
 
-// Les réponses (> 1024 bytes) du serveur seront compressées au format GZIP pour
-// diminuer la quantité d'informations transmise
+/*
+Les réponses (> 1024 bytes) du serveur seront compressées au format GZIP pour
+diminuer la quantité d'informations transmises
+*/
 var compression = require("compression");
 app.use(compression());
 
@@ -40,9 +48,11 @@ app.get("/", function(req, res) {
   res.send("Welcome to the leboncoin API.");
 });
 
-// `Cross-Origin Resource Sharing` est un mechanisme permettant d'autoriser les
-// requêtes provenant d'un nom de domaine different Ici, nous autorisons l'API
-// à repondre aux requêtes AJAX venant d'autres serveurs
+/*
+`Cross-Origin Resource Sharing` est un mechanisme permettant d'autoriser les
+requêtes provenant d'un nom de domaine différent. Ici, nous autorisons l'API
+à repondre aux requêtes AJAX venant d'autres serveurs.
+*/
 var cors = require("cors");
 app.use("/api", cors());
 
@@ -56,15 +66,19 @@ app.use("/api", coreRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/offer", offerRoutes);
 
-// Toutes les méthodes HTTP (GET, POST, etc.) des pages non trouvées afficheront
-// une erreur 404
+/*
+Toutes les méthodes HTTP (GET, POST, etc.) des pages non trouvées afficheront
+une erreur 404
+*/
 app.all("*", function(req, res) {
   res.status(404).json({ error: "Not Found" });
 });
 
-// Le dernier middleware de la chaîne gérera les d'erreurs Ce `error handler`
-// doit définir obligatoirement 4 paramètres Définition d'un middleware :
-// https://expressjs.com/en/guide/writing-middleware.html
+/*
+Le dernier middleware de la chaîne gérera les d'erreurs. Ce `error handler`
+doit définir obligatoirement 4 paramètres `err, req, res, next`.
+Définition d'un middleware : https://expressjs.com/en/guide/writing-middleware.html
+*/
 app.use(function(err, req, res, next) {
   if (res.statusCode === 200) res.status(400);
   console.error(err);
