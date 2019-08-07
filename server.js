@@ -3,49 +3,55 @@ Le package `dotenv` permet de definir des variables d'environnement
 dans le fichier `.env`. Nous utilisons le fichier `.slugignore` pour ignorer
 le fichier `.env` dans l'environnement Heroku
 */
-require("dotenv").config();
+require('dotenv').config();
 
 /*
 Le package `mongoose` est un ODM (Object-Document Mapping) permettant de
 la manipulation des documents de la base de données comme si s'agissait d'objets
 */
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 mongoose.connect(
   process.env.MONGODB_URI,
   {
-    useNewUrlParser: true
+    useNewUrlParser: true,
   },
   function(err) {
-    if (err) console.error("Could not connect to mongodb.");
+    if (err) console.error('Could not connect to mongodb.');
   }
 );
 
-var express = require("express");
+var express = require('express');
 var app = express();
+
+/*
+express-formidable permet de gérer les fichiers envoyer en FormData
+*/
+var formidableMiddleware = require('express-formidable');
+app.use(formidableMiddleware());
 
 /*
 Le package `helmet` est une collection de protections contre certaines
 vulnérabilités HTTP
 */
-var helmet = require("helmet");
+var helmet = require('helmet');
 app.use(helmet());
 
 /*
 Les réponses (> 1024 bytes) du serveur seront compressées au format GZIP pour
 diminuer la quantité d'informations transmises
 */
-var compression = require("compression");
+var compression = require('compression');
 app.use(compression());
 
 // Parse le `body` des requêtes HTTP reçues
-var bodyParser = require("body-parser");
-app.use(bodyParser.json({ limit: "50mb" })); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
+var bodyParser = require('body-parser');
+app.use(bodyParser.json({ limit: '50mb' })); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
 
 // Initialisation des models
-var User = require("./models/User");
+var User = require('./models/User');
 
-app.get("/", function(req, res) {
-  res.send("Welcome to the leboncoin API.");
+app.get('/', function(req, res) {
+  res.send('Welcome to the leboncoin API.');
 });
 
 /*
@@ -53,25 +59,25 @@ app.get("/", function(req, res) {
 requêtes provenant d'un nom de domaine différent. Ici, nous autorisons l'API
 à repondre aux requêtes AJAX venant d'autres serveurs.
 */
-var cors = require("cors");
-app.use("/api", cors());
+var cors = require('cors');
+app.use('/api', cors());
 
 // Les routes sont séparées dans plusieurs fichiers
-var coreRoutes = require("./routes/core.js");
-var userRoutes = require("./routes/user.js");
-var offerRoutes = require("./routes/offer.js");
+var coreRoutes = require('./routes/core.js');
+var userRoutes = require('./routes/user.js');
+var offerRoutes = require('./routes/offer.js');
 
 // Les routes relatives aux utilisateurs auront pour prefix d'URL `/user`
-app.use("/api", coreRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/offer", offerRoutes);
+app.use('/api', coreRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/offer', offerRoutes);
 
 /*
 Toutes les méthodes HTTP (GET, POST, etc.) des pages non trouvées afficheront
 une erreur 404
 */
-app.all("*", function(req, res) {
-  res.status(404).json({ error: "Not Found" });
+app.all('*', function(req, res) {
+  res.status(404).json({ error: 'Not Found' });
 });
 
 /*
