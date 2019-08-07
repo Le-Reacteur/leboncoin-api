@@ -222,6 +222,8 @@ router.delete('/remove/:id', isAuthenticated, function(req, res, next) {
 });
 
 router.post('/upload', isAuthenticated, (req, res) => {
+  console.log('route');
+
   // les différents clés des fichiers (file1, file2, file3...)
   const files = Object.keys(req.files);
   if (files.length) {

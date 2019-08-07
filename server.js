@@ -24,12 +24,6 @@ var express = require('express');
 var app = express();
 
 /*
-express-formidable permet de gérer les fichiers envoyer en FormData
-*/
-var formidableMiddleware = require('express-formidable');
-app.use(formidableMiddleware());
-
-/*
 Le package `helmet` est une collection de protections contre certaines
 vulnérabilités HTTP
 */
@@ -44,8 +38,14 @@ var compression = require('compression');
 app.use(compression());
 
 // Parse le `body` des requêtes HTTP reçues
-var bodyParser = require('body-parser');
-app.use(bodyParser.json({ limit: '50mb' })); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
+// var bodyParser = require('body-parser');
+// app.use(bodyParser.json({ limit: '50mb' })); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
+
+/*
+express-formidable permet de gérer les fichiers envoyer en FormData
+*/
+var formidableMiddleware = require('express-formidable');
+app.use(formidableMiddleware());
 
 // Initialisation des models
 var User = require('./models/User');
