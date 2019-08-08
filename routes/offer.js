@@ -3,6 +3,9 @@ var router = express.Router();
 var Offer = require('../models/Offer.js');
 var isAuthenticated = require('../middlewares/isAuthenticated');
 var ObjectId = require('mongoose').Types.ObjectId;
+
+var formidableMiddleware = require('express-formidable');
+
 // Importation de Cloudinary
 var cloudinary = require('cloudinary');
 // Configuration de Cloudinary
@@ -221,7 +224,7 @@ router.delete('/remove/:id', isAuthenticated, function(req, res, next) {
   );
 });
 
-router.post('/upload', isAuthenticated, (req, res) => {
+router.post('/upload', formidableMiddleware(), isAuthenticated, (req, res) => {
   console.log('route');
 
   // les différents clés des fichiers (file1, file2, file3...)
