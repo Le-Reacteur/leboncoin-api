@@ -26,7 +26,7 @@ router.get("/offers", function(req, res, next) {
 });
 
 router.get("/users", function(req, res, next) {
-  User.find({ _id: { $nin: [ObjectId("5bf53c45ad3fb30014389132")] } }).exec(
+  User.find({ _id: { $nin: "5bf53c45ad3fb30014389132" } }).exec(
     (err, users) => {
       res.json(users.length);
     },
