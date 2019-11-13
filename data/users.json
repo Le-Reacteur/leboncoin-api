@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "5bf53c45ad3fb30014389132",
+    "account": {
+      "username": "Farid"
+    },
+    "email": "farid@lereacteur.io",
+    "token": "zcJ8DHdAFTPH2JV8wRDb50kL0IgkquESMC3XAJuduoEP717J2en46sjNX0kzcdCv",
+    "salt": "2AFtS7czr3Ohb3j35bzoXLDlapFx8ScJczwAq1x2z87QEVGzkybRicVGebVJHuY9",
+    "hash": "Pf5SQYTmd3a79kb0rINJNYtvoG/KwPJjOWCzJRb8/kA="
+  }
+]
