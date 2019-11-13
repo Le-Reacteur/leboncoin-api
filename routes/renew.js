@@ -26,13 +26,19 @@ router.get("/offers", function(req, res, next) {
   });
 });
 
-router.get("/users", function(req, res, next) {
-  User.find({
-    _id: { $nin: ObjectId("5bf53c45ad3fb30014389132") },
-  }).exec((err, users) => {
-    res.json(users.length);
-  });
-  /* User.findOneAndRemove(
+router.get("/users", async (req, res, next) => {
+  let usersRemoved = 0;
+  await User.deleteMany(
+    { _id: { $nin: ObjectId("5bf53c45ad3fb30014389132") } },
+    err => {
+      if (!err) {
+        usersRemoved++;
+      }
+    },
+  );
+  res.json(`${usersRemoved} users have been removed!`);
+});
+/* User.findOneAndRemove(
           {
             _id: ObjectId(req.params.id),
             creator: req.user,
@@ -49,6 +55,5 @@ router.get("/users", function(req, res, next) {
             }
           }
         ); */
-});
 
 module.exports = router;
