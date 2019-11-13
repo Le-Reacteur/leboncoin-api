@@ -38,22 +38,5 @@ router.get("/users", async (req, res, next) => {
   );
   res.json(`${usersRemoved} users have been removed!`);
 });
-/* User.findOneAndRemove(
-          {
-            _id: ObjectId(req.params.id),
-            creator: req.user,
-          },
-          function(err, obj) {
-            if (err) {
-              return next(err.message);
-            }
-            if (!obj) {
-              res.status(404);
-              return next('Nothing to delete');
-            } else {
-              return res.json({ message: 'Deleted' });
-            }
-          }
-        ); */
 
 module.exports = router;
