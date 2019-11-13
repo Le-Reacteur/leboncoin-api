@@ -32,11 +32,12 @@ router.get("/users", async (req, res, next) => {
     { _id: { $nin: ObjectId("5bf53c45ad3fb30014389132") } },
     err => {
       if (!err) {
-        usersRemoved++;
+        res.json("Users have been removed, except Farid!");
+      } else {
+        res.next("An error occurred removing users.");
       }
     },
   );
-  res.json(`${usersRemoved} users have been removed!`);
 });
 
 module.exports = router;
