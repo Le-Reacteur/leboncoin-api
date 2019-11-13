@@ -4,6 +4,10 @@
 
 https://leboncoin-api.herokuapp.com/
 
+## Pour renouveller la base de données (_offers_)
+
+https://leboncoin-api.herokuapp.com/api/renew
+
 ## Credits
 
 [Farid Safi](https://twitter.com/faridsafi)  
