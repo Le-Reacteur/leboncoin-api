@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const router = express.Router();
+var ObjectId = require("mongoose").Types.ObjectId;
 
 const Offer = require("../models/Offer.js");
 const User = require("../models/User.js");
@@ -26,11 +27,11 @@ router.get("/offers", function(req, res, next) {
 });
 
 router.get("/users", function(req, res, next) {
-  User.find({ _id: { $nin: "5bf53c45ad3fb30014389132" } }).exec(
-    (err, users) => {
-      res.json(users.length);
-    },
-  );
+  User.find({
+    _id: { $nin: ObjectId("5bf53c45ad3fb30014389132") },
+  }).exec((err, users) => {
+    res.json(users.length);
+  });
   /* User.findOneAndRemove(
           {
             _id: ObjectId(req.params.id),
