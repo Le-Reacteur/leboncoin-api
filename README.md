@@ -2,9 +2,15 @@
 
 https://leboncoin-api.herokuapp.com/
 
-## Pour renouveller la base de données (_offers_)
+## Pour renouveller les données de la base
 
-https://leboncoin-api.herokuapp.com/api/renew
+### Offres
+
+https://leboncoin-api.herokuapp.com/api/renew/offers
+
+### Utilisateurs (excepté Farid)
+
+https://leboncoin-api.herokuapp.com/api/renew/users
 
 ## Credits
 
