@@ -307,6 +307,76 @@ router.post(
   },
 );
 
+router.post('/lbc-academy/upload', formidableMiddleware(), isAuthenticated, (req, res) => {
+  console.log('route');
+
+  // les différents clés des fichiers (file1, file2, file3...)
+  const files = Object.keys(req.files);
+  if (files.length) {
+    const results = {};
+    // on parcours les fichiers
+    files.forEach(fileKey => {
+      // on utilise les path de chaque fichier (la localisation temporaire du fichier sur le serveur)
+      cloudinary.v2.uploader.upload(
+        req.files[fileKey].path,
+        {
+          // on peut préciser un dossier
+          folder: 'some_folder',
+        },
+        (error, result) => {
+          // on enregistre le résultat dans un object
+          if (error) {
+            results[fileKey] = {
+              success: false,
+              error: error,
+            };
+          } else {
+            results[fileKey] = {
+              success: true,
+              result: result,
+            };
+          }
+          if (Object.keys(results).length === files.length) {
+            // tous les uploads sont fait on peut envoyer la réponse
+            return res.json(results);
+          }
+        }
+      );
+    });
+  } else {
+    res.send('no file uploaded');
+  }
+});
+
+router.post('/lbc-academy/publish', isAuthenticated, function(req, res, next) {
+  var obj = {
+    title: req.body.title,
+    description: req.body.description,
+    price: req.body.price,
+    pictures: req.pictures,
+    creator: req.user,
+  };
+  var offer = new Offer(obj);
+  offer.save(function(err) {
+    if (!err) {
+      return res.json({
+        _id: offer._id,
+        title: offer.title,
+        description: offer.description,
+        price: offer.price,
+        pictures: offer.pictures,
+        created: offer.created,
+        creator: {
+          account: offer.creator.account,
+          _id: offer.creator._id,
+        },
+      });
+    } else {
+      return next(err.message);
+    }
+  });
+});
+
 router.get("/:id", function(req, res, next) {
   Offer.findById(req.params.id)
     .populate({ path: "creator", select: "account" })
