@@ -13,7 +13,7 @@ var cloudinary = require("cloudinary");
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 router.get("/", function(req, res) {
@@ -35,13 +35,13 @@ router.get("/", function(req, res) {
   if (req.query.title) {
     filter.title = {
       $regex: req.query.title,
-      $options: "i"
+      $options: "i",
     };
   }
 
   const query = Offer.find(filter).populate({
     path: "creator",
-    select: "account"
+    select: "account",
   });
 
   if (req.query.skip !== undefined) {
@@ -94,14 +94,14 @@ router.get("/with-counter", function(req, res) {
   if (req.query.title) {
     filter.title = {
       $regex: req.query.title,
-      $options: "i"
+      $options: "i",
     };
   }
 
   Offer.count({}, (err, count) => {
     const query = Offer.find(filter).populate({
       path: "creator",
-      select: "account"
+      select: "account",
     });
 
     if (req.query.skip !== undefined) {
@@ -155,14 +155,14 @@ router.get("/with-count", function(req, res) {
   if (req.query.title) {
     filter.title = {
       $regex: req.query.title,
-      $options: "i"
+      $options: "i",
     };
   }
 
   Offer.count(filter, (err, count) => {
     const query = Offer.find(filter).populate({
       path: "creator",
-      select: "account"
+      select: "account",
     });
 
     if (req.query.skip !== undefined) {
@@ -209,7 +209,7 @@ router.delete("/remove/:id", isAuthenticated, function(req, res, next) {
   Offer.findOneAndRemove(
     {
       _id: ObjectId(req.params.id),
-      creator: req.user
+      creator: req.user,
     },
     function(err, obj) {
       if (err) {
@@ -221,7 +221,7 @@ router.delete("/remove/:id", isAuthenticated, function(req, res, next) {
       } else {
         return res.json({ message: "Deleted" });
       }
-    }
+    },
   );
 });
 
@@ -240,7 +240,7 @@ const uploadPictures = (req, res, next) => {
         req.files[fileKey].path,
         {
           // J'assigne un dossier spécifique dans Cloudinary pour chaque utilisateur
-          public_id: `leboncoin/${req.user._id}/${name}`
+          public_id: `leboncoin/${req.user._id}/${name}`,
         },
         (error, result) => {
           console.log(error, result);
@@ -249,7 +249,7 @@ const uploadPictures = (req, res, next) => {
             return res.status(500).json({ error });
           }
           // Sinon, je push mon image dans le tableau
-          pictures.push(result);
+          pictures.push(result.secure_url);
           // Et j'incrémente le nombre d'upload
           filesUploaded++;
           console.log("-------\n", result);
@@ -263,7 +263,7 @@ const uploadPictures = (req, res, next) => {
             // ... et je poursuis ma route avec `next()`
             next();
           }
-        }
+        },
       );
     });
   } else {
@@ -283,7 +283,7 @@ router.post(
       description: req.fields.description,
       price: req.fields.price,
       pictures: req.pictures,
-      creator: req.user
+      creator: req.user,
     };
     var offer = new Offer(obj);
     offer.save(function(err) {
@@ -297,14 +297,14 @@ router.post(
           created: offer.created,
           creator: {
             account: offer.creator.account,
-            _id: offer.creator._id
-          }
+            _id: offer.creator._id,
+          },
         });
       } else {
         return next(err.message);
       }
     });
-  }
+  },
 );
 
 router.get("/:id", function(req, res, next) {
