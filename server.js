@@ -9,40 +9,40 @@ require("dotenv").config();
 Le package `mongoose` est un ODM (Object-Document Mapping) permettant de
 la manipulation des documents de la base de données comme si s'agissait d'objets
 */
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 mongoose.connect(
   process.env.MONGODB_URI,
   {
-    useNewUrlParser: true,
+    useNewUrlParser: true
   },
   function(err) {
     if (err) console.error("Could not connect to mongodb.");
-  },
+  }
 );
 
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
 
 /*
 Le package `helmet` est une collection de protections contre certaines
 vulnérabilités HTTP
 */
-var helmet = require("helmet");
+const helmet = require("helmet");
 app.use(helmet());
 
 /*
 Les réponses (> 1024 bytes) du serveur seront compressées au format GZIP pour
 diminuer la quantité d'informations transmises
 */
-var compression = require("compression");
+const compression = require("compression");
 app.use(compression());
 
 // Parse le `body` des requêtes HTTP reçues
-var bodyParser = require("body-parser");
-app.use(bodyParser.json()); // L'upload est fixée à 50mb maximum (pour l'envoi de fichiers)
+const formidableMiddleware = require("express-formidable");
+app.use(formidableMiddleware());
 
 // Initialisation des models
-var User = require("./models/User");
+const User = require("./models/User");
 
 app.get("/", function(req, res) {
   res.send("Welcome to the leboncoin API.");
@@ -53,14 +53,14 @@ app.get("/", function(req, res) {
 requêtes provenant d'un nom de domaine différent. Ici, nous autorisons l'API
 à repondre aux requêtes AJAX venant d'autres serveurs.
 */
-var cors = require("cors");
+const cors = require("cors");
 app.use("/api", cors());
 
 // Les routes sont séparées dans plusieurs fichiers
-var coreRoutes = require("./routes/core.js");
-var renewRoutes = require("./routes/renew.js");
-var userRoutes = require("./routes/user.js");
-var offerRoutes = require("./routes/offer.js");
+const coreRoutes = require("./routes/core.js");
+const renewRoutes = require("./routes/renew.js");
+const userRoutes = require("./routes/user.js");
+const offerRoutes = require("./routes/offer.js");
 
 // Les routes relatives aux utilisateurs auront pour prefix d'URL `/user`
 app.use("/api", coreRoutes);

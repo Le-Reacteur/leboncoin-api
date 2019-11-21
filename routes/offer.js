@@ -5,15 +5,13 @@ var isAuthenticated = require("../middlewares/isAuthenticated");
 var ObjectId = require("mongoose").Types.ObjectId;
 const uid2 = require("uid2");
 
-var formidableMiddleware = require("express-formidable");
-
 // Importation de Cloudinary
 var cloudinary = require("cloudinary");
 // Configuration de Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 router.get("/", function(req, res) {
@@ -35,13 +33,13 @@ router.get("/", function(req, res) {
   if (req.query.title) {
     filter.title = {
       $regex: req.query.title,
-      $options: "i",
+      $options: "i"
     };
   }
 
   const query = Offer.find(filter).populate({
     path: "creator",
-    select: "account",
+    select: "account"
   });
 
   if (req.query.skip !== undefined) {
@@ -94,14 +92,14 @@ router.get("/with-counter", function(req, res) {
   if (req.query.title) {
     filter.title = {
       $regex: req.query.title,
-      $options: "i",
+      $options: "i"
     };
   }
 
   Offer.count({}, (err, count) => {
     const query = Offer.find(filter).populate({
       path: "creator",
-      select: "account",
+      select: "account"
     });
 
     if (req.query.skip !== undefined) {
@@ -155,14 +153,14 @@ router.get("/with-count", function(req, res) {
   if (req.query.title) {
     filter.title = {
       $regex: req.query.title,
-      $options: "i",
+      $options: "i"
     };
   }
 
   Offer.count(filter, (err, count) => {
     const query = Offer.find(filter).populate({
       path: "creator",
-      select: "account",
+      select: "account"
     });
 
     if (req.query.skip !== undefined) {
@@ -209,7 +207,7 @@ router.delete("/remove/:id", isAuthenticated, function(req, res, next) {
   Offer.findOneAndRemove(
     {
       _id: ObjectId(req.params.id),
-      creator: req.user,
+      creator: req.user
     },
     function(err, obj) {
       if (err) {
@@ -221,7 +219,7 @@ router.delete("/remove/:id", isAuthenticated, function(req, res, next) {
       } else {
         return res.json({ message: "Deleted" });
       }
-    },
+    }
   );
 });
 
@@ -240,7 +238,7 @@ const uploadPictures = (req, res, next) => {
         req.files[fileKey].path,
         {
           // J'assigne un dossier spécifique dans Cloudinary pour chaque utilisateur
-          public_id: `leboncoin/${req.user._id}/${name}`,
+          public_id: `leboncoin/${req.user._id}/${name}`
         },
         (error, result) => {
           console.log(error, result);
@@ -263,7 +261,7 @@ const uploadPictures = (req, res, next) => {
             // ... et je poursuis ma route avec `next()`
             next();
           }
-        },
+        }
       );
     });
   } else {
@@ -272,91 +270,17 @@ const uploadPictures = (req, res, next) => {
   }
 };
 
-router.post(
-  "/publish",
-  formidableMiddleware(),
-  isAuthenticated,
-  uploadPictures,
-  function(req, res, next) {
-    var obj = {
-      title: req.fields.title,
-      description: req.fields.description,
-      price: req.fields.price,
-      pictures: req.pictures,
-      creator: req.user,
-    };
-    var offer = new Offer(obj);
-    offer.save(function(err) {
-      if (!err) {
-        return res.json({
-          _id: offer._id,
-          title: offer.title,
-          description: offer.description,
-          price: offer.price,
-          pictures: offer.pictures,
-          created: offer.created,
-          creator: {
-            account: offer.creator.account,
-            _id: offer.creator._id,
-          },
-        });
-      } else {
-        return next(err.message);
-      }
-    });
-  },
-);
-
-// Cette route est utilisée dans le cadre de la formation "LBC-ACADEMY"
-router.post('/lbc-academy/upload', formidableMiddleware(), isAuthenticated, (req, res) => {
-  console.log('route');
-
-  // les différents clés des fichiers (file1, file2, file3...)
-  const files = Object.keys(req.files);
-  if (files.length) {
-    const results = {};
-    // on parcours les fichiers
-    files.forEach(fileKey => {
-      // on utilise les path de chaque fichier (la localisation temporaire du fichier sur le serveur)
-      cloudinary.v2.uploader.upload(
-        req.files[fileKey].path,
-        {
-          // on peut préciser un dossier
-          folder: 'some_folder',
-        },
-        (error, result) => {
-          // on enregistre le résultat dans un object
-          if (error) {
-            results[fileKey] = {
-              success: false,
-              error: error,
-            };
-          } else {
-            results[fileKey] = {
-              success: true,
-              result: result,
-            };
-          }
-          if (Object.keys(results).length === files.length) {
-            // tous les uploads sont fait on peut envoyer la réponse
-            return res.json(results);
-          }
-        }
-      );
-    });
-  } else {
-    res.send('no file uploaded');
-  }
-});
-
-// Cette route est utilisée dans le cadre de la formation "LBC-ACADEMY"
-router.post('/lbc-academy/publish', isAuthenticated, function(req, res, next) {
+router.post("/publish", isAuthenticated, uploadPictures, function(
+  req,
+  res,
+  next
+) {
   var obj = {
-    title: req.body.title,
-    description: req.body.description,
-    price: req.body.price,
+    title: req.fields.title,
+    description: req.fields.description,
+    price: req.fields.price,
     pictures: req.pictures,
-    creator: req.user,
+    creator: req.user
   };
   var offer = new Offer(obj);
   offer.save(function(err) {
@@ -370,8 +294,80 @@ router.post('/lbc-academy/publish', isAuthenticated, function(req, res, next) {
         created: offer.created,
         creator: {
           account: offer.creator.account,
-          _id: offer.creator._id,
+          _id: offer.creator._id
+        }
+      });
+    } else {
+      return next(err.message);
+    }
+  });
+});
+
+// Cette route est utilisée dans le cadre de la formation "LBC-ACADEMY"
+router.post("/lbc-academy/upload", isAuthenticated, (req, res) => {
+  console.log("route");
+
+  // les différents clés des fichiers (file1, file2, file3...)
+  const files = Object.keys(req.files);
+  if (files.length) {
+    const results = {};
+    // on parcours les fichiers
+    files.forEach(fileKey => {
+      // on utilise les path de chaque fichier (la localisation temporaire du fichier sur le serveur)
+      cloudinary.v2.uploader.upload(
+        req.files[fileKey].path,
+        {
+          // on peut préciser un dossier
+          folder: "some_folder"
         },
+        (error, result) => {
+          // on enregistre le résultat dans un object
+          if (error) {
+            results[fileKey] = {
+              success: false,
+              error: error
+            };
+          } else {
+            results[fileKey] = {
+              success: true,
+              result: result
+            };
+          }
+          if (Object.keys(results).length === files.length) {
+            // tous les uploads sont fait on peut envoyer la réponse
+            return res.json(results);
+          }
+        }
+      );
+    });
+  } else {
+    res.send("no file uploaded");
+  }
+});
+
+// Cette route est utilisée dans le cadre de la formation "LBC-ACADEMY"
+router.post("/lbc-academy/publish", isAuthenticated, function(req, res, next) {
+  var obj = {
+    title: req.fields.title,
+    description: req.fields.description,
+    price: req.fields.price,
+    pictures: req.pictures,
+    creator: req.user
+  };
+  var offer = new Offer(obj);
+  offer.save(function(err) {
+    if (!err) {
+      return res.json({
+        _id: offer._id,
+        title: offer.title,
+        description: offer.description,
+        price: offer.price,
+        pictures: offer.pictures,
+        created: offer.created,
+        creator: {
+          account: offer.creator.account,
+          _id: offer.creator._id
+        }
       });
     } else {
       return next(err.message);

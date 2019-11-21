@@ -11,16 +11,16 @@ var User = require("../models/User.js");
 router.post("/sign_up", function(req, res, next) {
   const token = uid2(64);
   const salt = uid2(64);
-  const hash = SHA256(req.body.password + salt).toString(encBase64);
+  const hash = SHA256(req.fields.password + salt).toString(encBase64);
 
   const user = new User({
-    email: req.body.email,
+    email: req.fields.email,
     token: token,
     salt: salt,
     hash: hash,
     account: {
-      username: req.body.username,
-      phone: req.body.phone
+      username: req.fields.username,
+      phone: req.fields.phone
     }
   });
   user.save(function(err) {
@@ -37,11 +37,12 @@ router.post("/sign_up", function(req, res, next) {
 });
 
 router.post("/log_in", function(req, res, next) {
-  User.findOne({ email: req.body.email }).exec(function(err, user) {
+  User.findOne({ email: req.fields.email }).exec(function(err, user) {
     if (err) return next(err.message);
     if (user) {
       if (
-        SHA256(req.body.password + user.salt).toString(encBase64) === user.hash
+        SHA256(req.fields.password + user.salt).toString(encBase64) ===
+        user.hash
       ) {
         return res.json({
           _id: user._id,
