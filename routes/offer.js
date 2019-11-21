@@ -307,6 +307,7 @@ router.post(
   },
 );
 
+// Cette route est utilisée dans le cadre de la formation "LBC-ACADEMY"
 router.post('/lbc-academy/upload', formidableMiddleware(), isAuthenticated, (req, res) => {
   console.log('route');
 
@@ -348,6 +349,7 @@ router.post('/lbc-academy/upload', formidableMiddleware(), isAuthenticated, (req
   }
 });
 
+// Cette route est utilisée dans le cadre de la formation "LBC-ACADEMY"
 router.post('/lbc-academy/publish', isAuthenticated, function(req, res, next) {
   var obj = {
     title: req.body.title,
