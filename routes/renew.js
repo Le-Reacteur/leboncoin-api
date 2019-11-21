@@ -6,6 +6,12 @@ var ObjectId = require("mongoose").Types.ObjectId;
 const Offer = require("../models/Offer.js");
 const User = require("../models/User.js");
 
+// Ces routes permettent de vider la base de données entre chaque session de formation
+// Offres
+// https://leboncoin-api.herokuapp.com/api/renew/offers
+// Utilisateurs (excepté Farid)
+// https://leboncoin-api.herokuapp.com/api/renew/users
+
 router.get("/offers", function(req, res, next) {
   const offers = JSON.parse(fs.readFileSync("./data/products.json", "utf-8"));
   Offer.remove({}, async err => {
